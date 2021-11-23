@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Org.BouncyCastle.Crypto.Xml</RootNamespace>
     <AssemblyName>bc-xml-security</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
@@ -82,6 +82,7 @@
     <Compile Include="HashWrappers.cs" />
     <Compile Include="ICanonicalizableNode.cs" />
     <Compile Include="IRelDecryptor.cs" />
+    <Compile Include="ISignerWithKey.cs" />
     <Compile Include="KeyInfo.cs" />
     <Compile Include="KeyInfoClause.cs" />
     <Compile Include="KeyInfoEncryptedKey.cs" />
@@ -120,6 +121,7 @@
     </Compile>
     <Compile Include="X509IncludeOption.cs" />
     <Compile Include="X509IssuerSerial.cs" />
+    <Compile Include="X509SignerImpl.cs" />
     <Compile Include="XmlDecryptionTransform.cs" />
     <Compile Include="XmlDsigBase64Transform.cs" />
     <Compile Include="XmlDsigC14NTransform.cs" />

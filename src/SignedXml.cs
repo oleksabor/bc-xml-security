@@ -183,6 +183,11 @@ namespace Org.BouncyCastle.Crypto.Xml
             set { _signingKey = value; }
         }
 
+        public ISignerWithKey Signer
+        {
+            get; set;
+        }
+
         public EncryptedXml EncryptedXml
         {
             get
@@ -398,7 +403,7 @@ namespace Org.BouncyCastle.Crypto.Xml
             BuildDigestedReferences();
 
             // Load the key
-            AsymmetricKeyParameter key = SigningKey;
+            AsymmetricKeyParameter key = Signer?.Key ?? SigningKey;
 
             if (key == null)
                 throw new System.Security.Cryptography.CryptographicException(SR.Cryptography_Xml_LoadKeyFailed);
@@ -421,7 +426,7 @@ namespace Org.BouncyCastle.Crypto.Xml
             }
 
             // See if there is a signature description class defined in the Config file
-            ISigner signatureDescription = CryptoHelpers.CreateFromName<ISigner>(SignedInfo.SignatureMethod);
+            ISigner signatureDescription = Signer ?? CryptoHelpers.CreateFromName<ISigner>(SignedInfo.SignatureMethod);
             if (signatureDescription == null)
                 throw new System.Security.Cryptography.CryptographicException(SR.Cryptography_Xml_SignatureDescriptionNotCreated);
 

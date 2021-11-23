@@ -11,7 +11,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Org.BouncyCastle.Crypto.Xml.Tests</RootNamespace>
     <AssemblyName>XmlSecurity.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
@@ -160,6 +160,8 @@
     <Compile Include="TestHelpers.cs" />
     <Compile Include="TransformChainTest.cs" />
     <Compile Include="TransformTest.cs" />
+    <Compile Include="X509Helper.cs" />
+    <Compile Include="X509SignerImplTest.cs" />
     <Compile Include="XmlDecryptionTransformTest.cs" />
     <Compile Include="XmlDsigBase64TransformTest.cs" />
     <Compile Include="XmlDsigC14NTransformTest.cs" />
