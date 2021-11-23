@@ -2,14 +2,19 @@
 using System.IO;
 using System.Text;
 using System.Xml;
+using Org.BouncyCastle.Crypto.Digests;
 using Xunit;
 
 namespace Org.BouncyCastle.Crypto.Xml.Tests
 {
     public class X509SignerImplTest
     {
- 
 
+#if DEBUG
+        /// <summary>
+        /// requires ServerCert_m3 cert to be loaded into LocalMachine\Personal store.
+        /// Current user must have Read permission on private key. 
+        /// </summary>
         [Fact]
         public void SignWithX509NotExportableKey()
         {
@@ -25,7 +30,7 @@ namespace Org.BouncyCastle.Crypto.Xml.Tests
             };
             var cert = new X509Helper().GetCertificate(_ => _.Subject.Contains("ServerCert_m3"), config);
 
-            sxml.Signer = new X509SignerImpl(cert);
+            sxml.Signer = new X509SignerImpl(cert, new Sha256Digest());
 
             
             DataObject d = new DataObject();
@@ -56,6 +61,7 @@ namespace Org.BouncyCastle.Crypto.Xml.Tests
             Assert.True(checker.CheckSignature(bccert, true));
 
         }
+#endif
 
         
 

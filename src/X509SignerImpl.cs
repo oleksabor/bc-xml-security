@@ -13,7 +13,7 @@ namespace Org.BouncyCastle.Crypto.Xml
         private readonly IDigest _digest;
 
         public X509SignerImpl(System.Security.Cryptography.X509Certificates.X509Certificate2 cert)
-            :this(cert, new Sha256Digest())
+            :this(cert, new Sha512Digest())
         { }
 
         public X509SignerImpl(System.Security.Cryptography.X509Certificates.X509Certificate2 cert, IDigest digest)
@@ -21,8 +21,6 @@ namespace Org.BouncyCastle.Crypto.Xml
             _cert = cert;
             _digest = digest;
         }
-
-
 
         public string AlgorithmName => _cert.PublicKey.Key.SignatureAlgorithm;
 
@@ -37,7 +35,14 @@ namespace Org.BouncyCastle.Crypto.Xml
             var key = System.Security.Cryptography.X509Certificates.RSACertificateExtensions.GetRSAPrivateKey(_cert);
             byte[] hash = new byte[_digest.GetDigestSize()];
             _digest.DoFinal(hash, 0);
-            return key.SignHash(hash, System.Security.Cryptography.HashAlgorithmName.SHA256, System.Security.Cryptography.RSASignaturePadding.Pkcs1);
+
+            var dsize = _digest.GetDigestSize();
+
+            var dname = _digest.AlgorithmName.Replace("-", "");
+
+            var hasAlgName = new System.Security.Cryptography.HashAlgorithmName(dname);
+
+            return key.SignHash(hash, hasAlgName, System.Security.Cryptography.RSASignaturePadding.Pkcs1);
         }
 
         public void Init(bool forSigning, ICipherParameters parameters)
