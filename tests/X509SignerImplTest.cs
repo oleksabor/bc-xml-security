@@ -30,9 +30,9 @@ namespace Org.BouncyCastle.Crypto.Xml.Tests
             };
             var cert = new X509Helper().GetCertificate(_ => _.Subject.Contains("ServerCert_m3"), config);
 
-            sxml.Signer = new X509SignerImpl(cert, new Sha256Digest());
+            sxml.Signer = new X509SignerImpl(cert, new Sha256Digest()); //digest shoud be the same as used for Reference.DigestMethod
 
-            
+
             DataObject d = new DataObject();
             //d.Data = doc.SelectNodes ("//*[local-name()='Body']/*");
             d.Data = doc.SelectNodes("//*[local-name()='Action']");
