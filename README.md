@@ -8,7 +8,23 @@ Adapted from [.NET Core](https://github.com/dotnet/runtime/tree/master/src/libra
 
 For portable version see [portable branch](../../tree/portable) (.NET Standard 2.0, 2.1).
 
-`X509SignerImpl` may be used to add `ds` prefix to `Signature` element like `ds:Signature`.
+### ds:Signature
+
+`SignedXml.GetXml` methods were adjusted to add `ds` prefix to `Signature` element like `ds:Signature`.
+
+### X509 non-exportable private key
+The 
+`System.Security.Cryptography.RSA.SignHash` 
+method is used by `X509SignerImpl` to generate signature having non exportable private key.
+
+```csharp
+var key = System.Security.Cryptography.X509Certificates.RSACertificateExtensions.GetRSAPrivateKey(_cert);
+return key.SignHash(hash, hasAlgName, System.Security.Cryptography.RSASignaturePadding.Pkcs1);
+```
+The `X509SignerImpl` may be injected into the `SignedXml`. 
+Like `X509SignerImplTest` does.
+
+
 
 ### Example
 
