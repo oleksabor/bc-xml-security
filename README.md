@@ -8,6 +8,8 @@ Adapted from [.NET Core](https://github.com/dotnet/runtime/tree/master/src/libra
 
 For portable version see [portable branch](../../tree/portable) (.NET Standard 2.0, 2.1).
 
+`X509SignerImpl` may be used to add `ds` prefix to `Signature` element like `ds:Signature`.
+
 ### Example
 
 See [samples folder](https://github.com/kmvi/bc-xml-security/tree/master/samples)
