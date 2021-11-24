@@ -162,15 +162,15 @@ namespace Org.BouncyCastle.Crypto.Xml
             return TransformToOctetStream(document, typeof(XmlDocument), resolver, baseUri);
         }
 
-        internal XmlElement GetXml(XmlDocument document, string ns)
+        internal XmlElement GetXml(XmlDocument document, string ns, string prefix = null)
         {
-            XmlElement transformsElement = document.CreateElement("Transforms", ns);
+            XmlElement transformsElement = document.CreateElement(prefix, "Transforms", ns);
             foreach (Transform transform in _transforms)
             {
                 if (transform != null)
                 {
                     // Construct the individual transform element
-                    XmlElement transformElement = transform.GetXml(document);
+                    XmlElement transformElement = transform.GetXml(document, prefix);
                     if (transformElement != null)
                         transformsElement.AppendChild(transformElement);
                 }

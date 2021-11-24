@@ -113,21 +113,21 @@ namespace Org.BouncyCastle.Crypto.Xml
         // public methods
         //
 
-        public XmlElement GetXml()
+        public XmlElement GetXml(string prefix = null)
         {
             XmlDocument document = new XmlDocument();
             document.PreserveWhitespace = true;
-            return GetXml(document);
+            return GetXml(document, prefix);
         }
 
-        internal XmlElement GetXml(XmlDocument document)
+        internal XmlElement GetXml(XmlDocument document, string prefix = null)
         {
-            return GetXml(document, "Transform");
+            return GetXml(document, "Transform", prefix);
         }
 
-        internal XmlElement GetXml(XmlDocument document, string name)
+        internal XmlElement GetXml(XmlDocument document, string name, string prefix)
         {
-            XmlElement transformElement = document.CreateElement(name, SignedXml.XmlDsigNamespaceUrl);
+            XmlElement transformElement = document.CreateElement(prefix, name, SignedXml.XmlDsigNamespaceUrl);
             if (!string.IsNullOrEmpty(Algorithm))
                 transformElement.SetAttribute("Algorithm", Algorithm);
             XmlNodeList children = GetInnerXml();

@@ -120,6 +120,12 @@ namespace Org.BouncyCastle.Crypto.Xml
             Initialize(document.DocumentElement);
         }
 
+        public SignedXml(XmlDocument document, string prefix)
+            : this(document)
+        {
+            Prefix = prefix;
+        }
+
         public SignedXml(XmlElement elem)
         {
             if (elem == null)
@@ -230,13 +236,15 @@ namespace Org.BouncyCastle.Crypto.Xml
             set { m_signature.KeyInfo = value; }
         }
 
+        public string Prefix { get; protected set; }
+
         public XmlElement GetXml()
         {
             // If we have a document context, then return a signature element in this context
             if (_containingDocument != null)
-                return m_signature.GetXml(_containingDocument);
+                return m_signature.GetXml(_containingDocument, Prefix);
             else
-                return m_signature.GetXml();
+                return m_signature.GetXml(Prefix);
         }
 
         public void LoadXml(XmlElement value)
@@ -431,7 +439,7 @@ namespace Org.BouncyCastle.Crypto.Xml
                 throw new System.Security.Cryptography.CryptographicException(SR.Cryptography_Xml_SignatureDescriptionNotCreated);
 
             signatureDescription.Init(true, key);
-            GetC14NDigest(new SignerHashWrapper(signatureDescription));
+            GetC14NDigest(new SignerHashWrapper(signatureDescription), Prefix);
 
             SignedXmlDebugLog.LogSigning(this, key, signatureDescription);
             m_signature.SignatureValue = signatureDescription.GenerateSignature();
@@ -467,7 +475,7 @@ namespace Org.BouncyCastle.Crypto.Xml
                 "RIPEMD160" => SignedXml.XmlDsigMoreHMACRIPEMD160Url,
                 _ => throw new System.Security.Cryptography.CryptographicException(SR.Cryptography_Xml_SignatureMethodKeyMismatch),
             };
-            GetC14NDigest(new MacHashWrapper(macAlg));
+            GetC14NDigest(new MacHashWrapper(macAlg), Prefix);
             byte[] hashValue = new byte[macAlg.GetMacSize()];
             macAlg.DoFinal(hashValue, 0);
 
@@ -789,14 +797,14 @@ namespace Org.BouncyCastle.Crypto.Xml
             }
         }
 
-        private void GetC14NDigest(IHash hash)
+        private void GetC14NDigest(IHash hash, string prefix)
         {
             bool isKeyedHashAlgorithm = hash is MacHashWrapper;
             if (isKeyedHashAlgorithm || !_bCacheValid || !SignedInfo.CacheValid)
             {
                 string baseUri = (_containingDocument == null ? null : _containingDocument.BaseURI);
                 XmlResolver resolver = (_bResolverSet ? _xmlResolver : new XmlSecureResolver(new XmlUrlResolver(), baseUri));
-                XmlDocument doc = Utils.PreProcessElementInput(SignedInfo.GetXml(), resolver, baseUri);
+                XmlDocument doc = Utils.PreProcessElementInput(SignedInfo.GetXml(prefix), resolver, baseUri);
 
                 // Add non default namespaces in scope
                 CanonicalXmlNodeList namespaces = (_context == null ? null : Utils.GetPropagatedAttributes(_context));
@@ -905,7 +913,7 @@ namespace Org.BouncyCastle.Crypto.Xml
             CanonicalXmlNodeList nodeList = new CanonicalXmlNodeList();
             foreach (DataObject obj in m_signature.ObjectList)
             {
-                nodeList.Add(obj.GetXml());
+                nodeList.Add(obj.GetXml(Prefix));
             }
             foreach (Reference reference in sortedReferences)
             {
@@ -918,7 +926,7 @@ namespace Org.BouncyCastle.Crypto.Xml
                 reference.UpdateHashValue(_containingDocument, nodeList);
                 // If this reference has an Id attribute, add it
                 if (reference.Id != null)
-                    nodeList.Add(reference.GetXml());
+                    nodeList.Add(reference.GetXml(Prefix));
             }
         }
 
@@ -1032,7 +1040,7 @@ namespace Org.BouncyCastle.Crypto.Xml
                 return false;
             }
 
-            GetC14NDigest(new SignerHashWrapper(signatureDescription));
+            GetC14NDigest(new SignerHashWrapper(signatureDescription), Prefix);
 
             /*SignedXmlDebugLog.LogVerifySignedInfo(this,
                                                   key,
@@ -1069,7 +1077,7 @@ namespace Org.BouncyCastle.Crypto.Xml
                 throw new System.Security.Cryptography.CryptographicException(SR.Cryptography_Xml_InvalidSignatureLength);
 
             // Calculate the hash
-            GetC14NDigest(new MacHashWrapper(macAlg));
+            GetC14NDigest(new MacHashWrapper(macAlg), Prefix);
             byte[] hashValue = new byte[macAlg.GetMacSize()];
             macAlg.DoFinal(hashValue, 0);
             SignedXmlDebugLog.LogVerifySignedInfo(this, macAlg, hashValue, m_signature.SignatureValue);

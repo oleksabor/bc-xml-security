@@ -88,17 +88,17 @@ namespace Org.BouncyCastle.Crypto.Xml
         // public methods
         //
 
-        public XmlElement GetXml()
+        public XmlElement GetXml(string prefix = null)
         {
             XmlDocument document = new XmlDocument();
             document.PreserveWhitespace = true;
-            return GetXml(document);
+            return GetXml(document, prefix);
         }
 
-        internal XmlElement GetXml(XmlDocument document)
+        internal XmlElement GetXml(XmlDocument document, string prefix)
         {
             // Create the Signature
-            XmlElement signatureElement = (XmlElement)document.CreateElement("Signature", SignedXml.XmlDsigNamespaceUrl);
+            XmlElement signatureElement = (XmlElement)document.CreateElement(prefix, "Signature", SignedXml.XmlDsigNamespaceUrl);
             if (!string.IsNullOrEmpty(_id))
                 signatureElement.SetAttribute("Id", _id);
 
@@ -106,13 +106,13 @@ namespace Org.BouncyCastle.Crypto.Xml
             if (_signedInfo == null)
                 throw new System.Security.Cryptography.CryptographicException(SR.Cryptography_Xml_SignedInfoRequired);
 
-            signatureElement.AppendChild(_signedInfo.GetXml(document));
+            signatureElement.AppendChild(_signedInfo.GetXml(document, prefix));
 
             // Add the SignatureValue
             if (_signatureValue == null)
                 throw new System.Security.Cryptography.CryptographicException(SR.Cryptography_Xml_SignatureValueRequired);
 
-            XmlElement signatureValueElement = document.CreateElement("SignatureValue", SignedXml.XmlDsigNamespaceUrl);
+            XmlElement signatureValueElement = document.CreateElement(prefix, "SignatureValue", SignedXml.XmlDsigNamespaceUrl);
             signatureValueElement.AppendChild(document.CreateTextNode(Convert.ToBase64String(_signatureValue)));
             if (!string.IsNullOrEmpty(_signatureValueId))
                 signatureValueElement.SetAttribute("Id", _signatureValueId);
@@ -128,7 +128,7 @@ namespace Org.BouncyCastle.Crypto.Xml
                 DataObject dataObj = obj as DataObject;
                 if (dataObj != null)
                 {
-                    signatureElement.AppendChild(dataObj.GetXml(document));
+                    signatureElement.AppendChild(dataObj.GetXml(document, prefix));
                 }
             }
 

@@ -161,19 +161,19 @@ namespace Org.BouncyCastle.Crypto.Xml
         // public methods
         //
 
-        public XmlElement GetXml()
+        public XmlElement GetXml(string prefix = null)
         {
             if (CacheValid) return (_cachedXml);
 
             XmlDocument document = new XmlDocument();
             document.PreserveWhitespace = true;
-            return GetXml(document);
+            return GetXml(document, prefix);
         }
 
-        internal XmlElement GetXml(XmlDocument document)
+        internal XmlElement GetXml(XmlDocument document, string prefix = null)
         {
             // Create the Reference
-            XmlElement referenceElement = document.CreateElement("Reference", SignedXml.XmlDsigNamespaceUrl);
+            XmlElement referenceElement = document.CreateElement(prefix, "Reference", SignedXml.XmlDsigNamespaceUrl);
 
             if (!string.IsNullOrEmpty(_id))
                 referenceElement.SetAttribute("Id", _id);
@@ -186,13 +186,13 @@ namespace Org.BouncyCastle.Crypto.Xml
 
             // Add the transforms to the Reference
             if (TransformChain.Count != 0)
-                referenceElement.AppendChild(TransformChain.GetXml(document, SignedXml.XmlDsigNamespaceUrl));
+                referenceElement.AppendChild(TransformChain.GetXml(document, SignedXml.XmlDsigNamespaceUrl, prefix));
 
             // Add the DigestMethod
             if (string.IsNullOrEmpty(_digestMethod))
                 throw new System.Security.Cryptography.CryptographicException(SR.Cryptography_Xml_DigestMethodRequired);
 
-            XmlElement digestMethodElement = document.CreateElement("DigestMethod", SignedXml.XmlDsigNamespaceUrl);
+            XmlElement digestMethodElement = document.CreateElement(prefix, "DigestMethod", SignedXml.XmlDsigNamespaceUrl);
             digestMethodElement.SetAttribute("Algorithm", _digestMethod);
             referenceElement.AppendChild(digestMethodElement);
 
@@ -203,7 +203,7 @@ namespace Org.BouncyCastle.Crypto.Xml
                 DigestValue = _hashval;
             }
 
-            XmlElement digestValueElement = document.CreateElement("DigestValue", SignedXml.XmlDsigNamespaceUrl);
+            XmlElement digestValueElement = document.CreateElement(prefix, "DigestValue", SignedXml.XmlDsigNamespaceUrl);
             digestValueElement.AppendChild(document.CreateTextNode(Convert.ToBase64String(_digestValue)));
             referenceElement.AppendChild(digestValueElement);
 

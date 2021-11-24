@@ -102,18 +102,18 @@ namespace Org.BouncyCastle.Crypto.Xml
         // public methods
         //
 
-        public XmlElement GetXml()
+        public XmlElement GetXml(string prefix = null)
         {
             if (CacheValid) return (_cachedXml);
 
             XmlDocument document = new XmlDocument();
             document.PreserveWhitespace = true;
-            return GetXml(document);
+            return GetXml(document, prefix);
         }
 
-        internal XmlElement GetXml(XmlDocument document)
+        internal XmlElement GetXml(XmlDocument document, string prefix)
         {
-            XmlElement objectElement = document.CreateElement("Object", SignedXml.XmlDsigNamespaceUrl);
+            XmlElement objectElement = document.CreateElement(prefix, "Object", SignedXml.XmlDsigNamespaceUrl);
 
             if (!string.IsNullOrEmpty(_id))
                 objectElement.SetAttribute("Id", _id);

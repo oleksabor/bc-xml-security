@@ -150,36 +150,36 @@ namespace Org.BouncyCastle.Crypto.Xml
         // public methods
         //
 
-        public XmlElement GetXml()
+        public XmlElement GetXml(string prefix = null)
         {
             if (CacheValid) return _cachedXml;
 
             XmlDocument document = new XmlDocument();
             document.PreserveWhitespace = true;
-            return GetXml(document);
+            return GetXml(document, prefix);
         }
 
-        internal XmlElement GetXml(XmlDocument document)
+        internal XmlElement GetXml(XmlDocument document, string prefix = null)
         {
             // Create the root element
-            XmlElement signedInfoElement = document.CreateElement("SignedInfo", SignedXml.XmlDsigNamespaceUrl);
+            XmlElement signedInfoElement = document.CreateElement(prefix, "SignedInfo", SignedXml.XmlDsigNamespaceUrl);
             if (!string.IsNullOrEmpty(_id))
                 signedInfoElement.SetAttribute("Id", _id);
 
             // Add the canonicalization method, defaults to SignedXml.XmlDsigNamespaceUrl
-            XmlElement canonicalizationMethodElement = CanonicalizationMethodObject.GetXml(document, "CanonicalizationMethod");
+            XmlElement canonicalizationMethodElement = CanonicalizationMethodObject.GetXml(document, "CanonicalizationMethod", prefix);
             signedInfoElement.AppendChild(canonicalizationMethodElement);
 
             // Add the signature method
             if (string.IsNullOrEmpty(_signatureMethod))
                 throw new System.Security.Cryptography.CryptographicException(SR.Cryptography_Xml_SignatureMethodRequired);
 
-            XmlElement signatureMethodElement = document.CreateElement("SignatureMethod", SignedXml.XmlDsigNamespaceUrl);
+            XmlElement signatureMethodElement = document.CreateElement(prefix, "SignatureMethod", SignedXml.XmlDsigNamespaceUrl);
             signatureMethodElement.SetAttribute("Algorithm", _signatureMethod);
             // Add HMACOutputLength tag if we have one
             if (_signatureLength != null)
             {
-                XmlElement hmacLengthElement = document.CreateElement(null, "HMACOutputLength", SignedXml.XmlDsigNamespaceUrl);
+                XmlElement hmacLengthElement = document.CreateElement(prefix, "HMACOutputLength", SignedXml.XmlDsigNamespaceUrl);
                 XmlText outputLength = document.CreateTextNode(_signatureLength);
                 hmacLengthElement.AppendChild(outputLength);
                 signatureMethodElement.AppendChild(hmacLengthElement);
@@ -194,7 +194,7 @@ namespace Org.BouncyCastle.Crypto.Xml
             for (int i = 0; i < _references.Count; ++i)
             {
                 Reference reference = (Reference)_references[i];
-                signedInfoElement.AppendChild(reference.GetXml(document));
+                signedInfoElement.AppendChild(reference.GetXml(document, prefix));
             }
 
             return signedInfoElement;
